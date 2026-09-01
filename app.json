@@ -3,6 +3,9 @@
     "name": "rooster-reminder",
     "slug": "rooster-reminder",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     },
