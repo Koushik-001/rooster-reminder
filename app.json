@@ -47,6 +47,9 @@
         "projectId": "e783285c-2c74-4138-89f4-22fdbba81c23"
       }
     },
-    "owner": "chava-koushik"
+    "owner": "chava-koushik",
+    "updates": {
+      "url": "https://u.expo.dev/e783285c-2c74-4138-89f4-22fdbba81c23"
+    }
   }
 }
