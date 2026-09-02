@@ -14,14 +14,14 @@ interface HomePageProps {
   children?: React.ReactNode;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ title, path, children }) => {
+export const HomePage: React.FC<HomePageProps> = () => {
   const today = new Date();
   const date = today.getDate();
   const month = today.toLocaleString('default', { month: 'long' });
   const [calendarClicked, setcalendarClicked] = useState(false);
-  // const pathname = usePathname();
-  // const router = useRouter();
-  // console.log(pathname, 'name');
+  const pathname = usePathname();
+  const router = useRouter();
+
   return (
     <View className="bg-white flex-1 pt-[5vh]">
       <View className='flex-row px-5 justify-between'>
@@ -34,10 +34,8 @@ export const HomePage: React.FC<HomePageProps> = ({ title, path, children }) => 
           </Text>
         </Pressable>
 
-        {/* <Pressable className="bg-white rounded-full p-3">
-          <User size={24} color="black" />
-        </Pressable> */}
-        {/* <User size={24} color="black" /> */}
+        <User size={24} color="black" />
+
 
 
       </View>
@@ -49,7 +47,7 @@ export const HomePage: React.FC<HomePageProps> = ({ title, path, children }) => 
         : ""}
       <View className='absolute top-[90vh] items-center w-full items-center'>
         <View className='border border-black-500 rounded-3xl p-3 w-[50%] justify-between flex-row'>
-          <Pressable className='bg-red-500 active:bg-black'><Text >nav bar</Text></Pressable>
+          <Pressable className={pathname === '/home' ? 'bg-red-500' : ''}><Text >nav bar</Text></Pressable>
           <Text>nav bar</Text>
         </View>
       </View>

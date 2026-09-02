@@ -244,3 +244,10 @@ Write-Host "5. Start local development:"
 Write-Host '   npx expo start'
 Write-Host ""
 Write-Host "==============================================="
+
+
+# ------------------------------------------------------------
+# Installation
+# ------------------------------------------------------------
+
+install packages using - npx expo install package-name
