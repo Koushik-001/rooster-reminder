@@ -5,7 +5,6 @@ import { Pressable, Text, View } from 'react-native';
 
 import { Calendar } from 'react-native-calendars';
 import Animated, { FadeIn, FadeInDown, FadeInUp, FadeOutUp } from 'react-native-reanimated';
-import { usePathname, useRouter } from "expo-router";
 import { Image } from 'react-native';
 
 
@@ -20,9 +19,6 @@ export const HomePage: React.FC<HomePageProps> = () => {
   const date = today.getDate();
   const month = today.toLocaleString('default', { month: 'long' });
   const [calendarClicked, setcalendarClicked] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
-
   return (
     <View className="bg-[#060d15] flex-1 pt-[5vh]">
       <View className='flex-row px-5 justify-between'>
@@ -62,12 +58,6 @@ export const HomePage: React.FC<HomePageProps> = () => {
           <View className='border border-black-100/30 rounded-lg p-2 m-5 top-[5vh]' ><Calendar enableSwipeMonths /></View>
         </Animated.View>
         : ""}
-      <View className='absolute top-[90vh] items-center w-full items-center'>
-        <View className='bg-[#1c242f] rounded-full p-3 w-[50%] justify-between flex-row'>
-          <Pressable onPress={() => { router.push('/home') }} className={pathname === '/home' ? 'bg-white text-black p-2 rounded-full' : 'text-white p-2'}><Text className={pathname === '/home' ? 'text-black' : 'text-white'}>Home</Text></Pressable>
-          <Pressable onPress={() => { router.push('/calendar') }} className={pathname === '/calendar' ? 'bg-white text-black p-2 rounded-full' : 'text-white p-2'}><Text className={pathname === '/calendar' ? 'text-black' : 'text-white'}>Calendar</Text></Pressable>
-        </View>
-      </View>
     </View>
   );
 };
