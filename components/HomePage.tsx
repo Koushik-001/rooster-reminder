@@ -1,11 +1,20 @@
 
-import { ArrowDown, ArrowDownNarrowWide, ChevronRight, Clock, User } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { ArrowDown, ArrowUp, Bell, Clock, User } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { Image, Pressable, Text, TextInput, View } from 'react-native';
 
 import { Calendar } from 'react-native-calendars';
-import Animated, { FadeIn, FadeInDown, FadeInUp, FadeOutUp } from 'react-native-reanimated';
-import { Image } from 'react-native';
+import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
+
+import {
+  MinuteScroller,
+  PickerModal,
+  PrimaryButton,
+  ReminderCard,
+  ReminderOptionRow,
+  TimeScroller,
+} from './GenericComponents';
+// import { useReminders } from './ReminderContext';
 
 
 interface HomePageProps {
@@ -16,54 +25,143 @@ interface HomePageProps {
 
 export const HomePage: React.FC<HomePageProps> = () => {
   const today = new Date();
-  const date = today.getDate();
-  const month = today.toLocaleString('default', { month: 'long' });
+  const todayKey = today.toISOString().split('T')[0];
+  const currentHour = today.getHours();
+  const currentMinute = today.getMinutes();
+  // const { addReminder } = useReminders();
   const [calendarClicked, setcalendarClicked] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(todayKey);
+  const [timePickerOpen, setTimePickerOpen] = useState(false);
+  const [reminderPickerOpen, setReminderPickerOpen] = useState(false);
+  const [selectedHour, setSelectedHour] = useState(currentHour);
+  const [selectedMinute, setSelectedMinute] = useState(currentMinute);
+  const [reminderOffset, setReminderOffset] = useState(5);
+  const [note, setNote] = useState('');
+  const formattedTime = `${selectedHour.toString().padStart(2, '0')}:${selectedMinute.toString().padStart(2, '0')}`;
+  const selectedDateText = new Date(`${selectedDate}T00:00:00`).toLocaleString('default', {
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const handleSubmitReminder = async () => {
+    // await addReminder({
+    //   date: selectedDate,
+    //   hour: selectedHour,
+    //   minute: selectedMinute,
+    //   note,
+    //   reminderOffset,
+    // });
+  };
+
   return (
-    <View className="bg-[#060d15] flex-1 pt-[5vh]">
-      <View className='flex-row px-5 justify-between'>
+    <View className="bg-[#060d15] flex-1 px-5 pt-12 pb-32">
+      <View className="flex-row justify-between items-center">
         <Pressable
           onPress={() => setcalendarClicked(!calendarClicked)}
           className="active:scale-110 transition-all bg-transparent p-2 rounded-xl"
         >
-          <Text className='bg-[#1c242f] p-2 rounded-xl text-white'>
-            {month} {date} <ArrowDown color={"white"} size={10} />
-          </Text>
+          <View className="flex-row gap-2 items-center bg-[#1c242f] px-3 py-2 rounded-xl">
+            <Text className="text-white font-bold">
+              {selectedDateText}
+            </Text>
+            {calendarClicked ? <ArrowUp color="white" size={15} /> : <ArrowDown color="white" size={15} />}
+          </View>
         </Pressable>
+
 
         <User size={24} color="white" />
-
-
-
-      </View>
-      <Image source={require('../assets/notepad.png')} className='w-full h-[40%] absolute top-[20%]' />
-
-      <View className='absolute top-[70%] w-[90%] ml-[5%] bg-[#1c242f] p-5 rounded-lg'>
-        <Pressable className='flex-row justify-between items-center mb-5'>
-          <Text className='text-white'><Clock color={"white"} /> Time</Text>
-          <Text className='text-white text-xl'>Time <ChevronRight color={"white"} size={15}/></Text>
-        </Pressable>
-
-        <View className="h-[1px] bg-white/20 mb-5" />
-
-        <Pressable className='flex-row justify-between items-center'>
-          <Text className='text-white'><Clock color={"white"} /> Time</Text>
-          <Text className='text-white text-xl'>Time <ChevronRight color={"white"} size={15}/></Text>
-        </Pressable>
       </View>
 
-      {calendarClicked ?
-        <Animated.View
-          entering={FadeInUp.duration(500)} exiting={FadeOutUp.duration(500)}>
-          <View className='border border-black-100/30 rounded-lg p-2 m-5 top-[5vh]' ><Calendar enableSwipeMonths /></View>
-        </Animated.View>
-        : ""}
+      <View className="flex-1 justify-end">
+        {!calendarClicked ? (
+          <View className="flex-1 justify-center relative">
+            <Image
+              source={require('../assets/notepad.png')}
+              resizeMode="contain"
+              className="w-full h-full"
+            />
+            <TextInput
+              value={note}
+              onChangeText={setNote}
+              multiline
+              textAlignVertical="top"
+              placeholder="Write your reminder..."
+              placeholderTextColor="#8a6f17"
+              className="absolute top-[24%] left-[12%] right-[12%] bottom-[24%] text-[#3a2b05] text-xl font-bold leading-7"
+              style={{ flexWrap: 'wrap' }}
+            />
+          </View>
+        ) : null}
+
+        {calendarClicked ? (
+          <Animated.View
+            entering={FadeInUp.duration(500)}
+            exiting={FadeOutUp.duration(500)}
+            className="mb-8"
+          >
+            <View className="border border-black-100/30 rounded-lg p-2">
+              <Calendar
+                enableSwipeMonths
+                markedDates={{
+                  [selectedDate]: {
+                    selected: true,
+                    selectedColor: '#f9c442',
+                  },
+                }}
+                onDayPress={(day) => {
+                  setSelectedDate(day.dateString);
+                  setcalendarClicked(false);
+                }}
+              />
+            </View>
+          </Animated.View>
+        ) : null}
+
+        <View className="gap-8 items-center">
+          <ReminderCard>
+            <ReminderOptionRow
+              icon={<Clock color="white" size={20} />}
+              label="Time"
+              value={formattedTime}
+              onPress={() => setTimePickerOpen(true)}
+              withDivider
+            />
+            <ReminderOptionRow
+              icon={<Bell color="white" size={20} />}
+              label="Remind Me"
+              value={`${reminderOffset} min`}
+              onPress={() => setReminderPickerOpen(true)}
+            />
+          </ReminderCard>
+
+          <PrimaryButton label="Set Reminder" onPress={handleSubmitReminder} />
+        </View>
+      </View>
+
+      <PickerModal
+        title="Select Time"
+        visible={timePickerOpen}
+        onClose={() => setTimePickerOpen(false)}
+      >
+        <TimeScroller
+          selectedHour={selectedHour}
+          selectedMinute={selectedMinute}
+          onSelectHour={setSelectedHour}
+          onSelectMinute={setSelectedMinute}
+        />
+      </PickerModal>
+
+      <PickerModal
+        title="Remind Me"
+        visible={reminderPickerOpen}
+        onClose={() => setReminderPickerOpen(false)}
+      >
+        <MinuteScroller
+          options={[5, 10, 15, 20]}
+          selectedValue={reminderOffset}
+          onSelect={setReminderOffset}
+        />
+      </PickerModal>
     </View>
   );
-};
-
-const styles = {
-  container: `items-center flex-1 bg-white`,
-  separator: `h-[1px] my-7 w-4/5 bg-gray-200`,
-  title: `text-xl font-bold`,
 };
