@@ -13,13 +13,6 @@
       "tsconfigPaths": true
     },
     "plugins": [
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/splash.png",
-          "backgroundColor": "#ffffff"
-        }
-      ],
       "expo-router",
       "expo-notifications"
     ],
