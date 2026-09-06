@@ -5,6 +5,7 @@ import { Image, Pressable, Text, TextInput, View } from 'react-native';
 
 import { Calendar } from 'react-native-calendars';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
+import { scheduleReminderNotifications } from '../services/notificationService';
 
 import {
   MinuteScroller,
@@ -14,7 +15,6 @@ import {
   ReminderOptionRow,
   TimeScroller,
 } from './GenericComponents';
-// import { useReminders } from './ReminderContext';
 
 
 interface HomePageProps {
@@ -28,7 +28,6 @@ export const HomePage: React.FC<HomePageProps> = () => {
   const todayKey = today.toISOString().split('T')[0];
   const currentHour = today.getHours();
   const currentMinute = today.getMinutes();
-  // const { addReminder } = useReminders();
   const [calendarClicked, setcalendarClicked] = useState(false);
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [timePickerOpen, setTimePickerOpen] = useState(false);
@@ -44,13 +43,26 @@ export const HomePage: React.FC<HomePageProps> = () => {
   });
 
   const handleSubmitReminder = async () => {
-    // await addReminder({
-    //   date: selectedDate,
-    //   hour: selectedHour,
-    //   minute: selectedMinute,
-    //   note,
-    //   reminderOffset,
-    // });
+    console.log('submit hit')
+    try {
+      if (!note.trim()) {
+        return;
+      }
+
+      const notificationIds = await scheduleReminderNotifications({
+        note: note.trim(),
+        date: selectedDate,
+        hour: selectedHour,
+        minute: selectedMinute,
+        reminderOffset,
+      });
+
+      console.log('Notifications scheduled:', notificationIds);
+
+      setNote('');
+    } catch (error) {
+      console.error('Failed to schedule reminder:', error);
+    }
   };
 
   return (
