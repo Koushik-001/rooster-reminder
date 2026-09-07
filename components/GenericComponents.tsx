@@ -91,17 +91,55 @@ export function TimeScroller({
   const hours = Array.from({ length: 24 }, (_, index) => index);
   const minutes = Array.from({ length: 60 }, (_, index) => index);
 
+  const hourScrollRef = React.useRef<ScrollView>(null);
+  const minuteScrollRef = React.useRef<ScrollView>(null);
+
+  const ITEM_WIDTH = 50;
+  const GAP = 12;
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      hourScrollRef.current?.scrollTo({
+        x: Math.max(0, selectedHour * 62 - 120),
+        animated: true,
+      });
+
+      minuteScrollRef.current?.scrollTo({
+        x: Math.max(0, selectedMinute * 62 - 350),
+        animated: true,
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [selectedHour, selectedMinute]);
+
   return (
     <View className="gap-4">
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+
+      {/* Hours */}
+      <ScrollView
+        ref={hourScrollRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+      >
         <View className="flex-row gap-3">
           {hours.map((hour) => (
             <Pressable
               key={hour}
               onPress={() => onSelectHour(hour)}
-              className={selectedHour === hour ? 'bg-white px-4 py-3 rounded-full' : 'bg-white/10 px-4 py-3 rounded-full'}
+              className={
+                selectedHour === hour
+                  ? 'bg-white px-4 py-3 rounded-full'
+                  : 'bg-white/10 px-4 py-3 rounded-full'
+              }
             >
-              <Text className={selectedHour === hour ? 'text-black font-bold' : 'text-white font-bold'}>
+              <Text
+                className={
+                  selectedHour === hour
+                    ? 'text-black font-bold'
+                    : 'text-white font-bold'
+                }
+              >
                 {hour.toString().padStart(2, '0')}
               </Text>
             </Pressable>
@@ -109,21 +147,37 @@ export function TimeScroller({
         </View>
       </ScrollView>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      {/* Minutes */}
+      <ScrollView
+        ref={minuteScrollRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+      >
         <View className="flex-row gap-3">
           {minutes.map((minute) => (
             <Pressable
               key={minute}
               onPress={() => onSelectMinute(minute)}
-              className={selectedMinute === minute ? 'bg-white px-4 py-3 rounded-full' : 'bg-white/10 px-4 py-3 rounded-full'}
+              className={
+                selectedMinute === minute
+                  ? 'bg-white px-4 py-3 rounded-full'
+                  : 'bg-white/10 px-4 py-3 rounded-full'
+              }
             >
-              <Text className={selectedMinute === minute ? 'text-black font-bold' : 'text-white font-bold'}>
+              <Text
+                className={
+                  selectedMinute === minute
+                    ? 'text-black font-bold'
+                    : 'text-white font-bold'
+                }
+              >
                 {minute.toString().padStart(2, '0')}
               </Text>
             </Pressable>
           ))}
         </View>
       </ScrollView>
+
     </View>
   );
 }

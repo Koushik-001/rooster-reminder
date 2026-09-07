@@ -1,10 +1,13 @@
-
 import { ArrowDown, ArrowUp, Bell, Clock, User } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Image, Pressable, Text, TextInput, View } from 'react-native';
 
 import { Calendar } from 'react-native-calendars';
-import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
+import Animated, {
+  FadeInUp,
+  FadeOutUp,
+} from 'react-native-reanimated';
+
 import { scheduleReminderNotifications } from '../services/notificationService';
 
 import {
@@ -16,7 +19,6 @@ import {
   TimeScroller,
 } from './GenericComponents';
 
-
 interface HomePageProps {
   title: string;
   path: string;
@@ -26,30 +28,42 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = () => {
   const today = new Date();
   const todayKey = today.toISOString().split('T')[0];
+
   const currentHour = today.getHours();
   const currentMinute = today.getMinutes();
+
   const [calendarClicked, setcalendarClicked] = useState(false);
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [timePickerOpen, setTimePickerOpen] = useState(false);
   const [reminderPickerOpen, setReminderPickerOpen] = useState(false);
+
   const [selectedHour, setSelectedHour] = useState(currentHour);
   const [selectedMinute, setSelectedMinute] = useState(currentMinute);
   const [reminderOffset, setReminderOffset] = useState(5);
+
   const [note, setNote] = useState('');
-  const formattedTime = `${selectedHour.toString().padStart(2, '0')}:${selectedMinute.toString().padStart(2, '0')}`;
-  const selectedDateText = new Date(`${selectedDate}T00:00:00`).toLocaleString('default', {
+  const [noteKey, setNoteKey] = useState(0);
+
+  const formattedTime = `${selectedHour
+    .toString()
+    .padStart(2, '0')}:${selectedMinute
+    .toString()
+    .padStart(2, '0')}`;
+
+  const selectedDateText = new Date(
+    `${selectedDate}T00:00:00`
+  ).toLocaleString('default', {
     month: 'long',
     day: 'numeric',
   });
 
   const handleSubmitReminder = async () => {
-    console.log('submit hit')
     try {
       if (!note.trim()) {
         return;
       }
 
-      const notificationIds = await scheduleReminderNotifications({
+      await scheduleReminderNotifications({
         note: note.trim(),
         date: selectedDate,
         hour: selectedHour,
@@ -57,9 +71,16 @@ export const HomePage: React.FC<HomePageProps> = () => {
         reminderOffset,
       });
 
-      console.log('Notifications scheduled:', notificationIds);
+      console.log('Reminder scheduled successfully');
+
+      const now = new Date();
+
+      setSelectedHour(now.getHours());
+      setSelectedMinute(now.getMinutes());
 
       setNote('');
+
+      setNoteKey((prev) => prev + 1);
     } catch (error) {
       console.error('Failed to schedule reminder:', error);
     }
@@ -67,6 +88,7 @@ export const HomePage: React.FC<HomePageProps> = () => {
 
   return (
     <View className="bg-[#060d15] flex-1 px-5 pt-12 pb-32">
+
       <View className="flex-row justify-between items-center">
         <Pressable
           onPress={() => setcalendarClicked(!calendarClicked)}
@@ -76,22 +98,33 @@ export const HomePage: React.FC<HomePageProps> = () => {
             <Text className="text-white font-bold">
               {selectedDateText}
             </Text>
-            {calendarClicked ? <ArrowUp color="white" size={15} /> : <ArrowDown color="white" size={15} />}
+
+            {calendarClicked ? (
+              <ArrowUp color="white" size={15} />
+            ) : (
+              <ArrowDown color="white" size={15} />
+            )}
           </View>
         </Pressable>
-
 
         <User size={24} color="white" />
       </View>
 
       <View className="flex-1 justify-end">
+
         {!calendarClicked ? (
-          <View className="flex-1 justify-center relative">
+          <Animated.View
+            key={noteKey}
+            entering={FadeInUp.duration(400)}
+            exiting={FadeOutUp.duration(400)}
+            className="flex-1 justify-center relative"
+          >
             <Image
               source={require('../assets/notepad.png')}
               resizeMode="contain"
               className="w-full h-full"
             />
+
             <TextInput
               value={note}
               onChangeText={setNote}
@@ -102,7 +135,7 @@ export const HomePage: React.FC<HomePageProps> = () => {
               className="absolute top-[24%] left-[12%] right-[12%] bottom-[24%] text-[#3a2b05] text-xl font-bold leading-7"
               style={{ flexWrap: 'wrap' }}
             />
-          </View>
+          </Animated.View>
         ) : null}
 
         {calendarClicked ? (
@@ -131,6 +164,7 @@ export const HomePage: React.FC<HomePageProps> = () => {
 
         <View className="gap-8 items-center">
           <ReminderCard>
+
             <ReminderOptionRow
               icon={<Clock color="white" size={20} />}
               label="Time"
@@ -138,15 +172,20 @@ export const HomePage: React.FC<HomePageProps> = () => {
               onPress={() => setTimePickerOpen(true)}
               withDivider
             />
+
             <ReminderOptionRow
               icon={<Bell color="white" size={20} />}
               label="Remind Me"
               value={`${reminderOffset} min`}
               onPress={() => setReminderPickerOpen(true)}
             />
+
           </ReminderCard>
 
-          <PrimaryButton label="Set Reminder" onPress={handleSubmitReminder} />
+          <PrimaryButton
+            label="Set Reminder"
+            onPress={handleSubmitReminder}
+          />
         </View>
       </View>
 
@@ -174,6 +213,7 @@ export const HomePage: React.FC<HomePageProps> = () => {
           onSelect={setReminderOffset}
         />
       </PickerModal>
+
     </View>
   );
 };
