@@ -116,7 +116,6 @@ export function TimeScroller({
   return (
     <View className="gap-4">
 
-      {/* Hours */}
       <ScrollView
         ref={hourScrollRef}
         horizontal
@@ -147,7 +146,6 @@ export function TimeScroller({
         </View>
       </ScrollView>
 
-      {/* Minutes */}
       <ScrollView
         ref={minuteScrollRef}
         horizontal

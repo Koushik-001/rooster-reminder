@@ -97,21 +97,17 @@ export const HomePage: React.FC<HomePageProps> = () => {
           notificationIds.beforeNotificationId,
       });
 
-      // Tell other pages that reminder data changed
       refreshReminders();
 
       console.log('Reminder scheduled successfully');
 
-      // Refresh current time for next reminder
       const now = new Date();
 
       setSelectedHour(now.getHours());
       setSelectedMinute(now.getMinutes());
 
-      // Clear current note
       setNote('');
 
-      // Trigger fresh notepad page
       setNoteKey((prev) => prev + 1);
     } catch (error) {
       console.error(

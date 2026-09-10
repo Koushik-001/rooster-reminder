@@ -61,10 +61,6 @@ export const CalendarPage: React.FC<CalendarPageProps> = () => {
 
                     setReminders(stored);
 
-                    console.log(
-                        'Calendar reminders:',
-                        stored
-                    );
                 } catch (error) {
                     console.error(
                         'Failed to load reminders:',
@@ -129,12 +125,10 @@ export const CalendarPage: React.FC<CalendarPageProps> = () => {
         (_, index) => currentYear - 10 + index
     );
 
-    console.log(displayedMonth, 'month');
 
     return (
         <View className="flex-1 bg-black pt-12">
 
-            {/* Year Button */}
             <View className="items-center mb-4">
                 <Pressable
                     onPress={() =>
@@ -154,7 +148,6 @@ export const CalendarPage: React.FC<CalendarPageProps> = () => {
                 </Pressable>
             </View>
 
-            {/* Calendar */}
             <View className="w-full">
                 <Calendar
                     key={`${displayedMonth}-${calendarKey}`}
@@ -221,7 +214,6 @@ export const CalendarPage: React.FC<CalendarPageProps> = () => {
                                     {date.day}
                                 </Text>
 
-                                {/* Upcoming reminder */}
                                 {status === 'upcoming' && (
                                     <Pin
                                         size={12}
@@ -235,7 +227,6 @@ export const CalendarPage: React.FC<CalendarPageProps> = () => {
                                     />
                                 )}
 
-                                {/* Finished reminder */}
                                 {status === 'finished' && (
                                     <View
                                         style={{
@@ -266,7 +257,6 @@ export const CalendarPage: React.FC<CalendarPageProps> = () => {
                 />
             </View>
 
-            {/* Year Modal */}
             <Modal
                 visible={yearModalVisible}
                 transparent
@@ -339,7 +329,6 @@ export const CalendarPage: React.FC<CalendarPageProps> = () => {
                 </View>
             </Modal>
 
-            {/* Reminder Modal */}
             <Modal
                 visible={reminderModalVisible}
                 transparent
