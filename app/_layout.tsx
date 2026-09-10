@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import { BottomNav } from '../components/GenericComponents';
 import { useEffect } from 'react';
 import { requestNotificationPermission } from 'services/notificationService';
+import { ReminderProvider } from 'components/ReminderContext';
 
 export default function RootLayout() {
   const pathname = usePathname();
@@ -15,6 +16,7 @@ export default function RootLayout() {
   }, []);
 
   return (
+    <ReminderProvider>
       <View className="flex-1">
         <Slot />
 
@@ -22,5 +24,6 @@ export default function RootLayout() {
           <BottomNav pathname={pathname} />
         </View>
       </View>
+    </ReminderProvider>
   );
 }

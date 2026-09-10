@@ -1,5 +1,5 @@
-import { HomePage } from 'components/HomePage';
+import { CalendarPage } from 'components/CalendarPage';
 
 export default function Calendar() {
-    return <HomePage title="Home" path="app/home.tsx" />;
+    return <CalendarPage title="Home" path="app/home.tsx" />;
 }

@@ -9,6 +9,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { scheduleReminderNotifications } from '../services/notificationService';
+import { saveReminder } from '../services/reminderStorage';
+import { useReminders } from '../components/ReminderContext';
 
 import {
   MinuteScroller,
@@ -18,7 +20,6 @@ import {
   ReminderOptionRow,
   TimeScroller,
 } from '../components/GenericComponents';
-import { saveReminder } from 'services/reminderStorage';
 
 interface HomePageProps {
   title: string;
@@ -27,19 +28,29 @@ interface HomePageProps {
 }
 
 export const HomePage: React.FC<HomePageProps> = () => {
+  const { refreshReminders } = useReminders();
+
   const today = new Date();
-  const todayKey = today.toISOString().split('T')[0];
+
+  const todayKey = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('-');
 
   const currentHour = today.getHours();
   const currentMinute = today.getMinutes();
 
   const [calendarClicked, setcalendarClicked] = useState(false);
   const [selectedDate, setSelectedDate] = useState(todayKey);
+
   const [timePickerOpen, setTimePickerOpen] = useState(false);
   const [reminderPickerOpen, setReminderPickerOpen] = useState(false);
 
   const [selectedHour, setSelectedHour] = useState(currentHour);
-  const [selectedMinute, setSelectedMinute] = useState(currentMinute);
+  const [selectedMinute, setSelectedMinute] =
+    useState(currentMinute);
+
   const [reminderOffset, setReminderOffset] = useState(5);
 
   const [note, setNote] = useState('');
@@ -48,8 +59,8 @@ export const HomePage: React.FC<HomePageProps> = () => {
   const formattedTime = `${selectedHour
     .toString()
     .padStart(2, '0')}:${selectedMinute
-      .toString()
-      .padStart(2, '0')}`;
+    .toString()
+    .padStart(2, '0')}`;
 
   const selectedDateText = new Date(
     `${selectedDate}T00:00:00`
@@ -64,13 +75,14 @@ export const HomePage: React.FC<HomePageProps> = () => {
         return;
       }
 
-      const notificationIds = await scheduleReminderNotifications({
-        note: note.trim(),
-        date: selectedDate,
-        hour: selectedHour,
-        minute: selectedMinute,
-        reminderOffset,
-      });
+      const notificationIds =
+        await scheduleReminderNotifications({
+          note: note.trim(),
+          date: selectedDate,
+          hour: selectedHour,
+          minute: selectedMinute,
+          reminderOffset,
+        });
 
       await saveReminder({
         id: Date.now().toString(),
@@ -79,22 +91,33 @@ export const HomePage: React.FC<HomePageProps> = () => {
         hour: selectedHour,
         minute: selectedMinute,
         reminderOffset,
-        notificationId: notificationIds.reminderNotificationId,
-        beforeNotificationId: notificationIds.beforeNotificationId,
+        notificationId:
+          notificationIds.reminderNotificationId,
+        beforeNotificationId:
+          notificationIds.beforeNotificationId,
       });
+
+      // Tell other pages that reminder data changed
+      refreshReminders();
 
       console.log('Reminder scheduled successfully');
 
+      // Refresh current time for next reminder
       const now = new Date();
 
       setSelectedHour(now.getHours());
       setSelectedMinute(now.getMinutes());
 
+      // Clear current note
       setNote('');
 
+      // Trigger fresh notepad page
       setNoteKey((prev) => prev + 1);
     } catch (error) {
-      console.error('Failed to schedule reminder:', error);
+      console.error(
+        'Failed to schedule reminder:',
+        error
+      );
     }
   };
 
@@ -103,7 +126,9 @@ export const HomePage: React.FC<HomePageProps> = () => {
 
       <View className="flex-row justify-between items-center">
         <Pressable
-          onPress={() => setcalendarClicked(!calendarClicked)}
+          onPress={() =>
+            setcalendarClicked(!calendarClicked)
+          }
           className="active:scale-110 transition-all bg-transparent p-2 rounded-xl"
         >
           <View className="flex-row gap-2 items-center bg-[#1c242f] px-3 py-2 rounded-xl">
@@ -181,7 +206,9 @@ export const HomePage: React.FC<HomePageProps> = () => {
               icon={<Clock color="white" size={20} />}
               label="Time"
               value={formattedTime}
-              onPress={() => setTimePickerOpen(true)}
+              onPress={() =>
+                setTimePickerOpen(true)
+              }
               withDivider
             />
 
@@ -189,7 +216,9 @@ export const HomePage: React.FC<HomePageProps> = () => {
               icon={<Bell color="white" size={20} />}
               label="Remind Me"
               value={`${reminderOffset} min`}
-              onPress={() => setReminderPickerOpen(true)}
+              onPress={() =>
+                setReminderPickerOpen(true)
+              }
             />
 
           </ReminderCard>
@@ -204,7 +233,9 @@ export const HomePage: React.FC<HomePageProps> = () => {
       <PickerModal
         title="Select Time"
         visible={timePickerOpen}
-        onClose={() => setTimePickerOpen(false)}
+        onClose={() =>
+          setTimePickerOpen(false)
+        }
       >
         <TimeScroller
           selectedHour={selectedHour}
@@ -217,7 +248,9 @@ export const HomePage: React.FC<HomePageProps> = () => {
       <PickerModal
         title="Remind Me"
         visible={reminderPickerOpen}
-        onClose={() => setReminderPickerOpen(false)}
+        onClose={() =>
+          setReminderPickerOpen(false)
+        }
       >
         <MinuteScroller
           options={[5, 10, 15, 20]}
