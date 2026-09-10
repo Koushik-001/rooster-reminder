@@ -32,7 +32,6 @@ export async function scheduleReminderNotifications({
 }: ScheduleReminderParams) {
     const [year, month, day] = date.split('-').map(Number);
 
-    // Reminder time in the device's local timezone
     const reminderDate = new Date(
         year,
         month - 1,
@@ -45,19 +44,16 @@ export async function scheduleReminderNotifications({
 
     const now = new Date();
 
-    // The actual reminder time must still be in the future
     if (reminderDate <= now) {
         throw new Error('The reminder time has already passed.');
     }
 
-    // Calculate the optional "X minutes before" notification
     const beforeDate = new Date(
         reminderDate.getTime() - reminderOffset * 60 * 1000
     );
 
     let beforeNotificationId: string | null = null;
 
-    // Only schedule the early notification if its time is still in the future
     if (beforeDate > now) {
         beforeNotificationId =
             await Notifications.scheduleNotificationAsync({
@@ -76,7 +72,6 @@ export async function scheduleReminderNotifications({
             });
     }
 
-    // Always schedule the actual reminder
     const reminderNotificationId =
         await Notifications.scheduleNotificationAsync({
             content: {

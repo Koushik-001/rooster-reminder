@@ -17,7 +17,8 @@ import {
   ReminderCard,
   ReminderOptionRow,
   TimeScroller,
-} from './GenericComponents';
+} from '../components/GenericComponents';
+import { saveReminder } from 'services/reminderStorage';
 
 interface HomePageProps {
   title: string;
@@ -47,8 +48,8 @@ export const HomePage: React.FC<HomePageProps> = () => {
   const formattedTime = `${selectedHour
     .toString()
     .padStart(2, '0')}:${selectedMinute
-    .toString()
-    .padStart(2, '0')}`;
+      .toString()
+      .padStart(2, '0')}`;
 
   const selectedDateText = new Date(
     `${selectedDate}T00:00:00`
@@ -63,12 +64,23 @@ export const HomePage: React.FC<HomePageProps> = () => {
         return;
       }
 
-      await scheduleReminderNotifications({
+      const notificationIds = await scheduleReminderNotifications({
         note: note.trim(),
         date: selectedDate,
         hour: selectedHour,
         minute: selectedMinute,
         reminderOffset,
+      });
+
+      await saveReminder({
+        id: Date.now().toString(),
+        note: note.trim(),
+        date: selectedDate,
+        hour: selectedHour,
+        minute: selectedMinute,
+        reminderOffset,
+        notificationId: notificationIds.reminderNotificationId,
+        beforeNotificationId: notificationIds.beforeNotificationId,
       });
 
       console.log('Reminder scheduled successfully');
