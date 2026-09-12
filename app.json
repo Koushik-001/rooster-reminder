@@ -3,7 +3,7 @@
     "name": "rooster-reminder",
     "slug": "rooster-reminder",
     "version": "1.0.0",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/logo.png",
 
     "runtimeVersion": {
       "policy": "fingerprint"
