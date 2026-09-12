@@ -3,24 +3,38 @@
     "name": "rooster-reminder",
     "slug": "rooster-reminder",
     "version": "1.0.0",
+    "icon": "./assets/images/icon.png",
+
     "runtimeVersion": {
       "policy": "fingerprint"
     },
+
     "web": {
       "favicon": "./assets/favicon.png"
     },
+
     "experiments": {
       "tsconfigPaths": true
     },
+
     "plugins": [
       "expo-router",
-      "expo-notifications"
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification_logo.png",
+          "color": "#FFD700"
+        }
+      ]
     ],
+
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+
     "assetBundlePatterns": [
       "**/*"
     ],
+
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.chavakoushik.roosterreminder",
@@ -28,15 +42,19 @@
         "ITSAppUsesNonExemptEncryption": false
       }
     },
+
     "android": {
       "package": "com.chavakoushik.roosterreminder"
     },
+
     "extra": {
       "eas": {
         "projectId": "e783285c-2c74-4138-89f4-22fdbba81c23"
       }
     },
+
     "owner": "chava-koushik",
+
     "updates": {
       "url": "https://u.expo.dev/e783285c-2c74-4138-89f4-22fdbba81c23"
     }
